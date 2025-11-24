@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${estadio.id != null} ? 'Editar Estadio' : 'Crear Estadio'">Crear / Editar Estadio</title>
+    <link rel="stylesheet" th:href="@{/css/crear-estadio.css}">
+</head>
+<body>
+
+<!-- HERO COMPACTO -->
+<header class="hero-compact">
+  <div class="hero-inner">
+    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="LBC" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+      <p class="hero-subtitle" th:text="${estadio.id != null} ? 'Editar Estadio' : 'Crear Estadio'">Crear / Editar Estadio</p>
+    </div>
+  </div>
+</header>
+
+<!-- VOLVER -->
+<nav class="simple-nav">
+  <div class="nav-container">
+    <a href="/admin/listar-temporadas-estadios" class="btn-back">Volver</a>
+  </div>
+</nav>
+
+<main class="form-content fade-in">
+  <div class="form-card">
+    <h2 class="form-title" th:text="${estadio.id != null} ? 'Editar Estadio' : 'Crear Estadio'">Crear / Editar Estadio</h2>
+
+    <form th:action="@{'/admin/crear-estadio/' + ${idTemporada}}" method="post" class="estadio-form">
+      <input type="hidden" name="idTemporada" th:value="${idTemporada}" />
+      <input type="hidden" name="temporadaId" th:value="${temporadaId}" />
+
+      <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" th:value="${estadio.nombre}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="ubicacion">Ubicación:</label>
+        <input type="text" id="ubicacion" name="ubicacion" th:value="${estadio.ubicacion}" required />
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn-primary" th:text="${estadio.id != null} ? 'Guardar Cambios' : 'Crear Estadio'">Crear</button>
+        <a href="/admin/listar-temporadas-estadios" class="btn-cancel">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer class="page-footer">
+  <p>&copy; 2025 Liga de Béisbol de Colombia</p>
+</footer>
+
+</body>
+</html>

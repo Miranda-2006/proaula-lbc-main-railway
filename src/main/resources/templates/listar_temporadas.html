@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Temporadas</title>
+    <link rel="stylesheet" th:href="@{/css/listar-temporadas.css}">
+</head>
+<body>
+
+<!-- HERO COMPACTO -->
+<header class="hero-compact">
+  <div class="hero-inner">
+    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="LBC" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+      <p class="hero-subtitle">Gestión de Temporadas</p>
+    </div>
+  </div>
+</header>
+
+<!-- VOLVER -->
+<nav class="simple-nav">
+  <div class="nav-container">
+    <a href="/admin" class="btn-back">Volver al Panel</a>
+  </div>
+</nav>
+
+<main class="contenido fade-in">
+  <div class="temporadas-card">
+
+    <h2 class="section-title">Lista de Temporadas</h2>
+
+    <a href="/admin/crear-temporada" class="btn-crear">Crear Nueva Temporada</a>
+
+    <div class="tabla-wrapper">
+      <table class="temporadas-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Año</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="temporada : ${temporadas}">
+            <td th:text="${temporada.nombreTemporada}">Nombre</td>
+            <td th:text="${temporada.anio}">2025</td>
+            <td class="acciones">
+              <a th:href="@{/admin/editar-temporada/{id}(id=${temporada.id})}" class="btn-editar">Editar</a>
+              <button type="button" class="btn-eliminar" th:attr="onclick=|abrirModal('${temporada.id}')|">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p th:if="${#lists.isEmpty(temporadas)}" class="no-data">No hay temporadas registradas.</p>
+  </div>
+</main>
+
+<!-- MODAL ELIMINAR -->
+<div id="modalEliminar" class="modal">
+  <div class="modal-content">
+    <h3>¿Estás seguro de eliminar esta temporada?</h3>
+    <div class="modal-buttons">
+		<form id="formEliminar" method="post">
+		    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		    <button type="submit" class="btn-eliminar-confirm">Sí, eliminar</button>
+		</form>
+      <button onclick="cerrarModal()" class="btn-cancelar">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<footer class="page-footer">
+  <p>&copy; 2025 Liga de Béisbol de Cartagena</p>
+</footer>
+
+<script>
+  function abrirModal(id) {
+    document.getElementById('formEliminar').action = `/admin/eliminar-temporada/${id}`;
+    document.getElementById('modalEliminar').style.display = 'flex';
+  }
+
+  function cerrarModal() {
+    document.getElementById('modalEliminar').style.display = 'none';
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById('modalEliminar');
+    if (event.target === modal) cerrarModal();
+  }
+</script>
+
+</body>
+</html>

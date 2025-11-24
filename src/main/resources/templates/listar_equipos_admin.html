@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Equipos</title>
+    <link rel="stylesheet" th:href="@{/css/listar-equipos.css}">
+</head>
+<body>
+
+<!-- HERO COMPACTO -->
+<header class="hero-compact">
+  <div class="hero-inner">
+    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="LBC" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+      <p class="hero-subtitle">Gestión de Equipos por Temporada</p>
+    </div>
+  </div>
+</header>
+
+<!-- VOLVER -->
+<nav class="simple-nav">
+  <div class="nav-container">
+    <a href="/admin" class="btn-back">Volver al Panel</a>
+  </div>
+</nav>
+
+<main class="contenido fade-in">
+
+  <!-- BUSCADOR GENERAL -->
+  <div class="search-general">
+    <form th:action="@{/admin/listar-equipos/buscar-temporada}" method="get">
+      <input type="text" name="filtro" placeholder="Buscar temporada por año o nombre" class="search-input">
+      <button type="submit" class="btn-search">Buscar</button>
+      <a th:href="@{/admin/listar-equipos}" class="btn-clear">Limpiar</a>
+    </form>
+  </div>
+
+  <section th:each="temporada : ${temporadas}" class="temporada-section">
+    <h2 class="temporada-title" th:text="${temporada.nombreTemporada + ' (' + temporada.anio + ')'}">Temporada</h2>
+
+    <a th:href="@{'/admin/crear-equipo/' + ${temporada.id}}" class="btn-crear">Crear Equipo</a>
+
+    <!-- BUSCADOR POR TEMPORADA -->
+    <div class="search-temporada">
+      <form th:action="@{/admin/listar-equipos/buscar-equipo}" method="get">
+        <input type="hidden" name="temporadaId" th:value="${temporada.id}">
+        <input type="text" name="filtro" placeholder="Buscar equipo en esta temporada" class="search-input">
+        <button type="submit" class="btn-search">Buscar</button>
+        <a th:href="@{/admin/listar-equipos}" class="btn-clear">Limpiar</a>
+      </form>
+    </div>
+
+    <p th:if="${#lists.isEmpty(temporada.equiposParticipantes)}" class="no-equipos">No hay equipos registrados para esta temporada.</p>
+
+    <div class="tabla-wrapper" th:if="${!#lists.isEmpty(temporada.equiposParticipantes)}">
+      <table class="equipos-table">
+        <thead>
+          <tr>
+            <th>Logo</th>
+            <th>Nombre del Equipo</th>
+            <th>Ciudad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="equipo, stat : ${temporada.equiposParticipantes}">
+            <td class="logo-cell">
+              <img th:src="@{'/admin/imagen-equipo/' + ${equipo.nombre}}" alt="Logo" class="equipo-logo">
+            </td>
+            <td th:text="${equipo.nombre}">Equipo</td>
+            <td th:text="${equipo.ciudad}">Ciudad</td>
+            <td class="acciones">
+              <a th:href="@{'/admin/editar-equipo/' + ${temporada.id} + '/' + ${stat.index}}" class="btn-editar">Editar</a>
+			  <button type="button"
+			          class="btn-eliminar"
+			          th:attr="onclick=|abrirModal('${temporada.id}', '${stat.index}', '${equipo.nombre}')|">
+			      Eliminar
+			  </button>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL ELIMINAR -->
+<div id="modalEliminar" class="modal">
+  <div class="modal-content">
+    <h3 id="tituloEliminar">¿Estás seguro de eliminar este equipo?</h3>
+    <p id="textoEquipo" style="margin-top:5px; font-size:0.9rem; color:#555;"></p>
+
+    <div class="modal-buttons">
+        <form id="formEliminar" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="btn-eliminar-confirm">Sí, eliminar</button>
+        </form>
+        <button onclick="cerrarModal()" class="btn-cancelar">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<footer class="page-footer">
+  <p>&copy; 2025 Liga de Béisbol de Cartagena</p>
+</footer>
+
+<script>
+  function abrirModal(idTemporada, indexEquipo, nombreEquipo) {
+    // Texto del equipo dentro del modal
+    document.getElementById("textoEquipo").innerText =
+      "Equipo: " + nombreEquipo;
+
+    // Construcción segura de la URL
+    document.getElementById("formEliminar").action =
+      `/admin/eliminar-equipo/${idTemporada}/${indexEquipo}`;
+
+    // Mostrar modal
+    document.getElementById("modalEliminar").style.display = "flex";
+  }
+
+  function cerrarModal() {
+    document.getElementById("modalEliminar").style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById("modalEliminar");
+    if (event.target === modal) cerrarModal();
+  };
+</script>
+
+
+</body>
+</html>

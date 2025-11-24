@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Partido</title>
+    <link rel="stylesheet" th:href="@{/css/ver-partido.css}">
+</head>
+<body>
+
+<!-- HERO COMPACTO -->
+<header class="hero-compact">
+  <div class="hero-inner">
+    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="LBC" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+      <p class="hero-subtitle">Detalles del Partido</p>
+    </div>
+  </div>
+</header>
+
+<!-- VOLVER -->
+<nav class="simple-nav">
+  <div class="nav-container">
+    <a href="/admin/listar-temporadas-partidos" class="btn-back">Volver</a>
+  </div>
+</nav>
+
+<main class="form-content fade-in">
+  <div class="form-card">
+    <h2 class="form-title" th:text="${temporada.nombreTemporada}">Temporada</h2>
+
+    <div class="partido-details">
+      <p><strong>Equipo Local:</strong> <span th:text="${partido.nombreEquipoLocal}">Local</span></p>
+      <p><strong>Equipo Visitante:</strong> <span th:text="${partido.nombreEquipoVisitante}">Visitante</span></p>
+      <p><strong>Fecha:</strong> <span th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy')}">Fecha</span></p>
+      <p><strong>Hora:</strong> <span th:text="${#temporals.format(partido.hora, 'hh:mm a')}">Hora</span></p>
+      <p><strong>Estadio:</strong> <span th:text="${partido.estadio.nombre}">Estadio</span></p>
+      <p class="marcador"><strong>Marcador:</strong> 
+        <span th:text="${partido.carrerasEquipoLocal}">0</span> - 
+        <span th:text="${partido.carrerasEquipoVisitante}">0</span>
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer class="page-footer">
+  <p>&copy; 2025 Liga de Béisbol de Cartagena</p>
+</footer>
+
+</body>
+</html>

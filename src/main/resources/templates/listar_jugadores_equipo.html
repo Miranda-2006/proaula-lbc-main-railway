@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Jugadores del Equipo</title>
+<link rel="stylesheet" th:href="@{/css/jugadores-equipo.css}">
+</head>
+<body>
+
+	<header class="hero-compact">
+	  <div class="hero-inner">
+	    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="LBC" class="hero-logo">
+	    <div class="hero-text">
+	      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+	      <p class="hero-subtitle" th:text="'Jugadores del Equipo: ' + ${equipo.nombre}">Jugadores del Equipo</p>
+	    </div>
+	  </div>
+	</header>
+		
+<nav>
+	<a th:href="@{/admin/jugadores/seleccionar(idTemporada=${idTemporada})}" >Volver </a>
+</nav>
+
+<main>
+    <section>
+        <h2>Bateadores</h2>
+        <ul th:if="${equipo.bateadores != null and !#lists.isEmpty(equipo.bateadores)}">
+			<li th:each="bateador, iterStat : ${equipo.bateadores}">
+			    <strong th:text="${bateador.nombre}">Nombre</strong> 
+			    <span th:text="${bateador.posicion}">Posición</span>
+				<br>
+			    <!-- Botón para ver perfil del bateador -->
+			    <a th:href="@{'/admin/perfil-bateador/' + ${idTemporada} + '/' + ${indexEquipo} + '/' + ${iterStat.index}}" class="btn">
+			        Ver Perfil
+			    </a>
+				<br>
+				<button type="button"
+				        class="btn btn-danger"
+				        th:data-url="@{/admin/eliminar-bateador/{idTemporada}/{indexEquipo}/{indexBateador}(idTemporada=${idTemporada},indexEquipo=${indexEquipo},indexBateador=${iterStat.index})}"
+				        th:data-nombre="${bateador.nombre}"
+				        onclick="abrirModal(this.dataset.url, this.dataset.nombre)">
+				    Eliminar
+				</button>
+
+			</li>
+        </ul>
+        <p th:if="${equipo.bateadores == null or #lists.isEmpty(equipo.bateadores)}">No hay bateadores registrados.</p>
+    </section>
+
+	<section>
+	    <h2>Lanzadores</h2>
+	    <ul th:if="${equipo.lanzadores != null and !#lists.isEmpty(equipo.lanzadores)}">
+	        <li th:each="lanzador, iterStat : ${equipo.lanzadores}">
+	            <strong th:text="${lanzador.nombre}">Nombre</strong>
+	            <span th:text="${lanzador.posicion}">Posición</span>
+	            <br>
+	            <a th:href="@{'/admin/perfil-lanzador/' + ${idTemporada} + '/' + ${indexEquipo} + '/' + ${iterStat.index}}" class="btn">
+	                Ver Perfil
+	            </a>
+				<br>
+				<button type="button"
+				        class="btn btn-danger"
+				        th:data-url="@{/admin/eliminar-lanzador/{idTemporada}/{indexEquipo}/{indexLanzador}(idTemporada=${idTemporada},indexEquipo=${indexEquipo},indexLanzador=${iterStat.index})}"
+				        th:data-nombre="${lanzador.nombre}"
+				        onclick="abrirModal(this.dataset.url, this.dataset.nombre)">
+				    Eliminar
+				</button>
+
+	        </li>
+	    </ul>
+	    <p th:if="${equipo.lanzadores == null or #lists.isEmpty(equipo.lanzadores)}">No hay lanzadores registrados.</p>
+	</section>
+	
+	<div id="modalEliminar" class="modal" style="display:none;">
+	  <div class="modal-content">
+	    <h3 id="modalMensaje">¿Estás seguro de eliminar?</h3>
+
+	    <div class="modal-buttons">
+	        <form id="formEliminar" method="post">
+	            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	            <button type="submit" class="btn-eliminar-confirm">Sí, eliminar</button>
+	        </form>
+
+	        <button onclick="cerrarModal()" class="btn-cancelar">Cancelar</button>
+	    </div>
+	  </div>
+	</div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Liga de Béisbol de Cartagena</p>
+</footer>
+
+<script>
+function abrirModal(url, nombreJugador) {
+    // Nombre seguro (viene de dataset, ya evaluado por Thymeleaf en atributo)
+    document.getElementById("modalMensaje").innerText =
+        "¿Estás seguro de eliminar a " + nombreJugador + "?";
+
+    // Asignar la acción del form (URL ya es string)
+    document.getElementById("formEliminar").action = url;
+
+    // Mostrar modal
+    document.getElementById("modalEliminar").style.display = "flex";
+}
+
+function cerrarModal() {
+    document.getElementById("modalEliminar").style.display = "none";
+}
+
+// Cerrar modal al hacer click fuera del contenido
+window.addEventListener('click', function(event){
+  const modal = document.getElementById('modalEliminar');
+  if (!modal) return;
+  if (event.target === modal) cerrarModal();
+});
+</script>
+
+
+</body>
+</html>

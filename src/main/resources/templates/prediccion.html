@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Liga de Béisbol de Cartagena</title>
+  <link rel="stylesheet" href="/css/prediccion.css">
+</head>
+<body>
+
+<header class="hero-compact" id="inicio">
+  <div class="hero-inner">
+    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="Liga de Béisbol de Cartagena" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+      <p class="hero-subtitle">Gestión oficial del béisbol en Cartagena</p>
+      <div class="hero-stats">
+        <span class="stat-capsule">
+          <strong class="stat-number">2025</strong> Temporada
+        </span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <div class="nav-container">
+    <a href="/" class="nav-link">Volver</a>
+    <a href="/temporadas-jugadores" class="nav-link">Jugadores</a>
+    <a href="/listar-partidos" class="nav-link">Partidos</a>
+
+    <a href="/admin" class="nav-link login-btn" 
+       th:unless="${#authorization.expression('isAuthenticated()')}">
+      Iniciar Sesión
+    </a>
+
+    <div class="user-section" th:if="${#authorization.expression('isAuthenticated()')}">
+
+      <span class="welcome-msg"
+            th:if="${#authentication.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}"
+            th:text="'Bienvenido, ' + ${#authentication.principal.attributes['name']} + '!'">
+      </span>
+
+      <span class="welcome-msg"
+            th:if="${#authentication.principal instanceof T(org.springframework.security.core.userdetails.User)}"
+            th:text="'Bienvenido, ' + ${#authentication.name} + '!'">
+      </span>
+
+      <a href="/admin" class="nav-link admin-panel-btn"
+         th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+        Panel Admin
+      </a>
+
+      <form th:action="@{/logout}" method="post" class="logout-form">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit" class="logout-btn">Cerrar sesión</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<main class="contenido">
+
+	<h2 class="titulo-principal">Análisis y Predicción del Partido ⚾</h2>
+	<p class="subtitulo">
+	  Ingresa los datos del equipo para analizar sus probabilidades de victoria según su rendimiento reciente.
+	</p>
+
+  <form action="/prediccion/resultado" method="post">
+
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+    <label>Local o Visitante:</label>
+    <select name="localVisitante">
+      <option value="Local">Local</option>
+      <option value="Visitante">Visitante</option>
+    </select>
+
+    <label>Racha últimos 3:</label>
+    <input type="number" name="rachaUlt3" step="1" required>
+
+    <label>Promedio carreras a favor:</label>
+    <input type="number" name="promFavor" step="0.01" required>
+
+    <label>Promedio carreras en contra:</label>
+    <input type="number" name="promContra" step="0.01" required>
+
+    <label>Fuerza del rival:</label>
+    <select name="rivalFuerza">
+      <option value="Alta">Alta</option>
+      <option value="Media">Media</option>
+      <option value="Baja">Baja</option>
+    </select>
+
+    <button type="submit">Predecir</button>
+  </form>
+
+  <!-- RESULTADO (solo si existe predicción) -->
+  <div id="res" th:if="${prediccionClase != null}">
+
+	<h3 class="resultado-texto">
+	  Resultado de la predicción:
+	  <span th:text="${prediccionClase == 'Si' ? 'GANA ✅' : 'PIERDE ❌'}"></span>
+	</h3>
+	
+	<audio id="sonido-win" src="/sounds/win.mp3"></audio>
+	<audio id="sonido-lose" src="/sounds/lose.mp3"></audio>
+	<div id="explicacion" class="explicacion-box"></div>
+	
+	<h3>Barra de Confianza:</h3>
+
+    <div class="confianza-bar">
+      <div class="confianza-fill"
+           th:style="'width:' + ${#numbers.formatDecimal(confianza, 0, 2)} + '%'"
+           th:classappend="${confianza > 70} ? ' high' : (${confianza > 40} ? ' medium' : ' low')">
+        <span th:text="${#numbers.formatDecimal(confianza, 0, 2)} + '%'">0%</span>
+      </div>
+    </div>
+
+    <h3>Datos enviados:</h3>
+    <ul>
+      <li>Local o Visitante <span th:text="${localVisitante}"></span></li>
+      <li>Racha últimos 3 <span th:text="${rachaUlt3}"></span></li>
+      <li>Promedio a favor <span th:text="${promFavor}"></span></li>
+      <li>Promedio en contra <span th:text="${promContra}"></span></li>
+      <li>Fuerza del rival <span th:text="${rivalFuerza}"></span></li>
+    </ul>
+
+  </div>
+
+  <div th:if="${error}">
+    <h3 style="color:red" th:text="${error}"></h3>
+  </div>
+
+</main>
+
+<footer>
+  <p>&copy; 2025 Liga de Béisbol de Cartagena</p>
+</footer>
+
+<script th:inline="javascript">
+
+  function generarExplicacion(datos, resultado, confianza) {
+    let razones = [];
+
+    // 1. Local / Visitante
+    if (datos.local_visitante === "Local") {
+      razones.push("🏟️ El equipo jugará en casa, algo que normalmente representa una ventaja importante tanto en lo anímico como en lo deportivo.");
+    } else {
+      razones.push("✈️ El equipo jugará como visitante, lo que implica un reto mayor al estar fuera de su campo.");
+    }
+
+    // 2. Racha últimos 3 partidos
+    if (datos.racha_ult3 === 3) {
+      razones.push("🔥 Viene de ganar sus últimos 3 partidos de forma consecutiva, lo que demuestra un excelente momento deportivo.");
+    } 
+    else if (datos.racha_ult3 === 2) {
+      razones.push("✅ Ha ganado 2 de sus últimos 3 partidos, señal de un buen rendimiento reciente.");
+    } 
+    else if (datos.racha_ult3 === 1) {
+      razones.push("⚠️ Solo ha conseguido 1 victoria en sus últimos 3 partidos, lo que muestra cierta irregularidad.");
+    } 
+    else {
+      razones.push("❌ No ha logrado ninguna victoria en sus últimos 3 partidos, lo que podría impulsarlo a dar su máximo esfuerzo en este encuentro.");
+    }
+
+    // 3. Carreras a favor vs en contra
+    if (datos.prom_carreras_favor > datos.prom_carreras_contra) {
+      razones.push("⚾ Anota más carreras de las que recibe, lo cual refleja una ofensiva más efectiva que su defensa.");
+    } 
+    else if (datos.prom_carreras_favor == datos.prom_carreras_contra) {
+      razones.push("⚖️ Mantiene un equilibrio entre las carreras que anota y las que recibe, mostrando un rendimiento parejo.");
+    } 
+    else {
+      razones.push("🛑 Recibe más carreras de las que anota, lo que evidencia una debilidad en su parte defensiva.");
+    }
+
+    // 4. Fuerza del rival
+    if (datos.rival_fuerza === "Baja") {
+      razones.push("💪 El rival tiene una fuerza baja, lo que representa una oportunidad favorable para este equipo.");
+    } 
+    else if (datos.rival_fuerza === "Media") {
+      razones.push("⚔️ El rival presenta una fuerza media, por lo que se espera un partido bastante equilibrado.");
+    } 
+    else {
+      razones.push("🚨 El rival tiene una fuerza alta, lo que lo convierte en un oponente muy exigente.");
+    }
+
+    // Nivel de confianza
+    let nivel = "";
+
+    if (confianza >= 80) {
+      nivel = "🔵 Existe una alta probabilidad de que este resultado se cumpla.";
+    } 
+    else if (confianza >= 50) {
+      nivel = "🟡 Hay una probabilidad moderada de que se cumpla este resultado.";
+    } 
+    else {
+      nivel = "🔴 Según el modelo, la probabilidad de que se cumpla este resultado es baja.";
+    }
+
+    // Texto final humanizado con emojis
+    let textoFinal = "";
+
+    if (resultado === "Si") {
+      textoFinal = 
+        "✅ El equipo probablemente GANARÁ este partido.\n\n" +
+        nivel + "\n\n" +
+        "📌 Las principales razones de esta predicción son:\n\n" +
+        razones.map(r => "• " + r).join("\n");
+    } else {
+      textoFinal =
+        "❌ El equipo probablemente PERDERÁ este partido.\n\n" +
+        nivel + "\n\n" +
+        "📌 Las principales razones de esta predicción son:\n\n" +
+        razones.map(r => "• " + r).join("\n");
+    }
+
+    document.getElementById("explicacion").style.whiteSpace = "pre-line";
+    document.getElementById("explicacion").innerText = textoFinal;
+  }
+
+  // ===== DATOS DESDE SPRING BOOT =====
+  const resultado = /*[[${prediccionClase}]]*/ "No";
+  const confianza = /*[[${confianza}]]*/ 0;
+
+  const datos = {
+    local_visitante: /*[[${localVisitante}]]*/ "Local",
+    racha_ult3: /*[[${rachaUlt3}]]*/ 0,
+    prom_carreras_favor: /*[[${promFavor}]]*/ 0,
+    prom_carreras_contra: /*[[${promContra}]]*/ 0,
+    rival_fuerza: /*[[${rivalFuerza}]]*/ "Media"
+  };
+
+  generarExplicacion(datos, resultado, confianza);
+
+</script>
+
+
+
+
+
+
+</body>
+</html>

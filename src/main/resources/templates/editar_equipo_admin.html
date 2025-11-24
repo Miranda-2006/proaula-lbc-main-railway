@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Equipo</title>
+    <link rel="stylesheet" th:href="@{/css/editar-equipo.css}">
+</head>
+<body>
+
+<!-- HERO COMPACTO -->
+<header class="hero-compact">
+  <div class="hero-inner">
+    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="LBC" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+      <p class="hero-subtitle" th:text="${temporada.nombreTemporada}">Temporada</p>
+    </div>
+  </div>
+</header>
+
+<!-- VOLVER -->
+<nav class="simple-nav">
+  <div class="nav-container">
+    <a href="/admin/listar-equipos" class="btn-back">Volver</a>
+  </div>
+</nav>
+
+<main class="form-content fade-in">
+  <div class="form-card">
+    <h2 class="form-title">Editar Equipo</h2>
+
+    <form th:action="@{'/admin/editar-equipo/' + ${temporada.id} + '/' + ${indice}}" method="post" class="edit-form">
+      <input type="hidden" name="_method" value="post" />
+
+      <div class="form-group">
+        <label for="nombre">Nombre del Equipo:</label>
+        <input type="text" id="nombre" name="nombre" th:value="${equipo.nombre}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="ciudad">Ciudad:</label>
+        <input type="text" id="ciudad" name="ciudad" th:value="${equipo.ciudad}" required />
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn-primary">Guardar Cambios</button>
+        <a href="/admin/listar-equipos" class="btn-cancel">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer class="page-footer">
+  <p>&copy; 2025 Liga de Béisbol de Cartagena</p>
+</footer>
+
+</body>
+</html>

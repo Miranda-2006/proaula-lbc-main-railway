@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Equipo</title>
+    <link rel="stylesheet" th:href="@{/css/seleccionar-equipo.css}">
+</head>
+<body>
+
+<!-- HERO COMPACTO -->
+<header class="hero-compact">
+  <div class="hero-inner">
+    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="LBC" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+      <p class="hero-subtitle" th:text="'Temporada: ' + ${temporada.nombreTemporada}">Temporada</p>
+    </div>
+  </div>
+</header>
+
+<!-- VOLVER -->
+<nav class="simple-nav">
+  <div class="nav-container">
+    <a href="/admin/jugadores" class="btn-back">Volver</a>
+  </div>
+</nav>
+
+<main class="contenido fade-in">
+  <div class="seleccion-card">
+    <h2 class="section-title">Agregar Jugador a un Equipo</h2>
+	
+	<!-- BUSCADOR DE EQUIPOS -->
+	<div class="search-general">
+	    <input type="text" id="buscarEquipo" class="search-input" placeholder="Buscar equipo...">
+	    <button class="btn-search" onclick="filtrarEquipos()">Buscar</button>
+	    <a href="#" class="btn-clear" onclick="limpiarBusqueda()">Limpiar</a>
+	</div>
+
+    <div class="equipos-grid" th:if="${temporada.equiposParticipantes != null and !#lists.isEmpty(temporada.equiposParticipantes)}">
+      <div th:each="equipo, index : ${temporada.equiposParticipantes}" class="equipo-card">
+        <h3 class="equipo-nombre" th:text="${equipo.nombre}">Equipo</h3>
+        <div class="equipo-actions">
+          <a th:href="@{/admin/agregar-bateador/{id}/{i}(id=${temporada.id}, i=${index.index})}" class="btn-bateador">Agregar Bateador</a>
+          <a th:href="@{/admin/agregar-lanzador/{id}/{i}(id=${temporada.id}, i=${index.index})}" class="btn-lanzador">Agregar Lanzador</a>
+          <a th:href="@{/admin/listar-jugadores-equipo/{id}/{i}(id=${temporada.id}, i=${index.index})}" class="btn-ver">Ver Jugadores</a>
+        </div>
+      </div>
+    </div>
+
+    <p th:if="${temporada.equiposParticipantes == null or #lists.isEmpty(temporada.equiposParticipantes)}" class="no-equipos">
+      No hay equipos registrados en esta temporada.
+    </p>
+
+</main>
+
+<footer class="page-footer">
+  <p>&copy; 2025 Liga de Béisbol de Cartagena</p>
+</footer>
+
+<script>
+function filtrarEquipos() {
+    const texto = document.getElementById("buscarEquipo").value.toLowerCase();
+    const equipos = document.querySelectorAll(".equipo-card");
+
+    equipos.forEach(card => {
+        const nombre = card.querySelector(".equipo-nombre").textContent.toLowerCase();
+        card.style.display = nombre.includes(texto) ? "block" : "none";
+    });
+}
+
+function limpiarBusqueda() {
+    document.getElementById("buscarEquipo").value = "";
+    filtrarEquipos();
+}
+</script>
+
+
+</body>
+</html>

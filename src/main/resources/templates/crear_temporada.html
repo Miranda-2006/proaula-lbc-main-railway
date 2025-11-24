@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Temporada</title>
+    <link rel="stylesheet" th:href="@{/css/crear-temporada.css}">
+</head>
+<body>
+
+<!-- HERO COMPACTO -->
+<header class="hero-compact">
+  <div class="hero-inner">
+    <img src="https://i.ibb.co/Bz7h7YK/Recurso-5-100.jpg" alt="LBC" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">Liga de Béisbol de Cartagena</h1>
+      <p class="hero-subtitle">Crear Nueva Temporada</p>
+    </div>
+  </div>
+</header>
+
+<!-- VOLVER -->
+<nav class="simple-nav">
+  <div class="nav-container">
+    <a th:href="@{/admin/listar-temporadas}" class="btn-back">Volver</a>
+  </div>
+</nav>
+
+<main class="form-content fade-in">
+  <div class="form-card">
+    <h2 class="form-title">Crear Nueva Temporada</h2>
+
+    <form th:action="@{/admin/crear-temporada}" th:object="${temporada}" method="post" class="temporada-form">
+
+      <div class="form-group">
+        <label for="nombreTemporada">Nombre de la Temporada:</label>
+        <input type="text" id="nombreTemporada" th:field="*{nombreTemporada}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="anio">Año:</label>
+        <input type="number" id="anio" th:field="*{anio}" required />
+      </div>
+
+      <button type="submit" class="btn-primary">Guardar Temporada</button>
+    </form>
+  </div>
+</main>
+
+<footer class="page-footer">
+  <p>&copy; 2025 Liga de Béisbol de Cartagena</p>
+</footer>
+
+</body>
+</html>
