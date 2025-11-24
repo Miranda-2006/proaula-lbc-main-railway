@@ -15,9 +15,9 @@ public class WekaService {
     private Classifier model;
 
     public WekaService() throws Exception {
-        structure = ConverterUtils.DataSource.read("src/main/resources/weka/lbc-dataset.arff");
+        structure = ConverterUtils.DataSource.read("src/main/resources/lbc-dataset.arff");
         structure.setClassIndex(structure.numAttributes() - 1);
-        model = (Classifier) SerializationHelper.read("src/main/resources/weka/lbcmodeltree.model");
+        model = (Classifier) SerializationHelper.read("src/main/resources/lbcmodeltree.model");
         System.out.println("✔ Modelo WEKA cargado correctamente.");
     }
 
