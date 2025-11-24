@@ -1,6 +1,8 @@
 package com.ligabeisbolcartagena.main.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader; // <-- Importante: Importar ResourceLoader
 import weka.classifiers.Classifier;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -14,10 +16,27 @@ public class WekaService {
     private Instances structure;
     private Classifier model;
 
-    public WekaService() throws Exception {
-        structure = ConverterUtils.DataSource.read("src/main/resources/lbc-dataset.arff");
-        structure.setClassIndex(structure.numAttributes() - 1);
-        model = (Classifier) SerializationHelper.read("src/main/resources/lbcmodeltree.model");
+    // 1. Inyectar ResourceLoader en el constructor
+    public WekaService(ResourceLoader resourceLoader) throws Exception {
+        
+        // Cargar el archivo ARFF
+        // Usamos "classpath:" para buscar dentro del JAR (en /resources)
+        Resource arffResource = resourceLoader.getResource("classpath:lbc-dataset.arff");
+        
+        // Ahora leemos el dataset usando el InputStream del recurso
+        try (var inputStream = arffResource.getInputStream()) {
+            structure = ConverterUtils.DataSource.read(inputStream);
+            structure.setClassIndex(structure.numAttributes() - 1);
+        }
+
+        // Cargar el modelo Weka serializado
+        Resource modelResource = resourceLoader.getResource("classpath:lbcmodeltree.model");
+        
+        // Ahora leemos el modelo usando el InputStream del recurso
+        try (var inputStream = modelResource.getInputStream()) {
+            model = (Classifier) SerializationHelper.read(inputStream);
+        }
+
         System.out.println("✔ Modelo WEKA cargado correctamente.");
     }
 
