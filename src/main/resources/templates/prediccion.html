@@ -76,14 +76,14 @@
       <option value="Visitante">Visitante</option>
     </select>
 
-    <label>Racha últimos 3:</label>
-    <input type="number" name="rachaUlt3" step="1" required>
+	<label>Racha de victorias (ultimos 3 partidos):</label>
+	<input type="number" name="rachaUlt3" min="0" max="3" step="1" required>
 
-    <label>Promedio carreras a favor:</label>
-    <input type="number" name="promFavor" step="0.01" required>
+    <label>Promedio de carreras a favor:</label>
+    <input type="number" name="promFavor" min="0" step="0.01" required>
 
-    <label>Promedio carreras en contra:</label>
-    <input type="number" name="promContra" step="0.01" required>
+    <label>Promedio de carreras en contra:</label>
+    <input type="number" name="promContra" min="0" step="0.01" required>
 
     <label>Fuerza del rival:</label>
     <select name="rivalFuerza">
@@ -102,10 +102,6 @@
 	  Resultado de la predicción:
 	  <span th:text="${prediccionClase == 'Si' ? 'GANA ✅' : 'PIERDE ❌'}"></span>
 	</h3>
-	
-	<audio id="sonido-win" src="/sounds/win.mp3"></audio>
-	<audio id="sonido-lose" src="/sounds/lose.mp3"></audio>
-	<div id="explicacion" class="explicacion-box"></div>
 	
 	<h3>Barra de Confianza:</h3>
 
