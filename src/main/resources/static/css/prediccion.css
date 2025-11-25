@@ -323,6 +323,13 @@ h3 {
   color: #003580;
 }
 
+.form-group label {
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+
 p {
   line-height: 1.7;
   margin-bottom: 1.5rem;
